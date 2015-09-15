@@ -63,6 +63,7 @@ int main(void)
 	printf("Parent is now signalling the semaphore...\n");
 	V(semid, mutex);
 	printf("Parent is now waiting for the children to exit.\n");
+
 	wait(0);
 	wait(0);
 	wait(0);
@@ -76,8 +77,8 @@ int main(void)
 	kill(pid3, SIGKILL);
 	kill(pid4, SIGKILL);
 	kill(pid5, SIGKILL);
-/*	kill(pid6, SIGKILL);
-	kill(pid7, SIGKILL); */
+	
+	/* TERMINATION */
 	printf("Children have exited. Final balance: $%d. Cleaning up...\n", shared->balance);
 	shmctl(shmid, IPC_RMID, 0);
 	semctl(SEMKEY,1,IPC_RMID,0);

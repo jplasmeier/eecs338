@@ -1,5 +1,7 @@
 #include "semex.h"
 
+/* LIST HELPER METHODS */
+
 void insert(node *pointer, int data)
 {
         /* Iterate through the list till we encounter the last node.*/
@@ -85,7 +87,7 @@ int main(int argc, char *argv[])
 		shared->waitingCount = shared->waitingCount + 1 ;
 		printf("Going to insert %d to the list", amount);
 		insert(shared->head, amount); /*append process to list*/
-		V(semid, mutex);
+		V(semid, mutex); /* signal mutex to allow waiting withdrawer to proceed */
 		P(semid, waitingWithdrawers);
 		shared->balance	= shared->balance - amount;
 		printf("Previously waiting Withdraw of $%d processed. Current Balance: $%d\n", amount, shared->balance);	
