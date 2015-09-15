@@ -81,7 +81,7 @@ int main(void)
 	printf("Children have exited. Final balance: $%d. Cleaning up...\n", shared->balance);
 	shmctl(shmid, IPC_RMID, 0);
 	semctl(SEMKEY,1,IPC_RMID,0);
-	system("/home/jgp/documents/Scripts/kill-ipcs.sh");
+/*	system("/home/jgp/documents/Scripts/kill-ipcs.sh"); */ 
 	printf("Closing...");
 	return 0;
 }
