@@ -15,6 +15,18 @@
 #define mutex 0
 #define waitingWithdrawers 1
 
+typedef struct Node 
+{
+        int data;
+        struct Node *next;
+}node;
+
+struct account {
+	int balance;
+	int customer_pid;
+	int waitingCount;
+	node* head;
+};
 
 void P(int semid, int semaphore)
 {
@@ -49,3 +61,4 @@ union semun {
 	/* buffer for IPC_INFO */
 	struct seminfo *__buf;
 };
+
