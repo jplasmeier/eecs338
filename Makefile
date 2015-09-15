@@ -2,17 +2,17 @@ CC = gcc
 CFLAGS = -g -Wall  
 LIBS = # None yet...
 OUTPUT = main depositer.bin withdrawer.bin 
-HEADERS = semex.h list.h
+HEADERS = semex.h 
 
 all: $(OUTPUT)
 
-withdrawer.bin: withdrawer.c list.c $(HEADERS)
+withdrawer.bin: withdrawer.c $(HEADERS)
 	$(CC) $(LIBS) $(CFLAGS) -o $@ $<
 
 depositer.bin: depositer.c $(HEADERS)
 	$(CC) $(LIBS) $(CFLAGS) -o $@ $<
 
-main: semex.c list.c $(HEADERS)
+main: semex.c $(HEADERS)
 	$(CC) $(LIBS) $(CFLAGS) -o $@ $<
 
 clean:
