@@ -15,11 +15,11 @@ int main(void)
 	struct account *shared;
 	srand(time(NULL));
 	key=ftok(".", SEMKEY);
-	seminit[mutex]=1; /* mutex */
-	seminit[waitingWithdrawers]=0; /* waitingWithdrawers */
 	semctlarg.array=seminit;
 	semctl(SEMKEY,1,SETALL,semctlarg);
-	semid = semget(SEMKEY, NUM_SEMS, 0777 | IPC_CREAT);
+	semid = semget(SEMKEY, NUM_SEMS, 0777 | IPC_PRIVATE);
+	seminit[mutex]=1; /* mutex */
+	seminit[waitingWithdrawers]=0; /* waitingWithdrawers */
 
 	/* SHARED MEMORY */
 	shmid = shmget(SHMKEY, sizeof(struct account), 0777 | IPC_CREAT);
@@ -51,7 +51,7 @@ int main(void)
 	}
 	else if ((pid5 = fork()) == 0) {
 		/* ##### CHANGE THIS DEPOSITER TO A WITHDRAWER TO OBSERVE FAILURE #### */
-		execl("depositer.bin", "300", "300", (char *) NULL);
+		execl("withdrawer.bin", "300", "300", (char *) NULL);
 		exit(EXIT_SUCCESS);
 	}
 

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/shm.h>
+#include <errno.h>
 
 #define SEMKEY 77
 #define SHMKEY 77
