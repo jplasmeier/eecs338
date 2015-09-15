@@ -1,78 +1,5 @@
 #include "semex.h"
 
-void withdrawer(int amt)
-{
-	int semid,shmid;
-	struct account *shared;
-	shmid = shmget(SHMKEY, 0, 0);
-	semid = semget(SEMKEY, NUM_SEMS, 0777);
-	shared = (struct account *)shmat(shmid, 0, 0);  
-	int pid=getpid();
-	int amount = amt;
-   
-	printf("Child process %d is going to withdraw $%d.\n",pid,amount);
-	
-	P(semid, mutex);
-	if (amount <= shared->balance && shared->waitingCount == 0) {
-		shared->balance = shared->balance - amount;
-		printf("Withdraw of $%d processed. Current Balance: $%d\n", amount, shared->balance);	
-		V(semid,mutex);
-	}
-	else {
-		shared->waitingCount = shared->waitingCount + 1 ;
-		printf("Going to insert %d to the list", amount);
-		insert(shared->head, amount); /*append process to list*/
-		V(semid, mutex);
-		P(semid, waitingWithdrawers);
-		shared->balance	= shared->balance - amount;
-		printf("Previously waiting Withdraw of $%d processed. Current Balance: $%d\n", amount, shared->balance);	
-		delete(shared->head, amount);	/*remove process from list*/
-		shared->waitingCount = shared->waitingCount - 1;
-		if (shared->waitingCount > 1 && shared->head->next->data < shared->balance) {
-			V(semid, waitingWithdrawers);
-		}
-		else {
-			printf("All waiting withdrawers service. Resuming normal operations. \n");
-			V(semid, mutex); //this signal corresponds to the departing depositer's wait.
-		}
-	}
-	printf("Critical Section Cleared. Applied amount of %d by Process %d. Current Balance: %d\n",amount,pid,shared->balance);
-	V(semid, mutex);
-	exit(0);
-}
-
-
-void depositer(int amt)
-{
-	int semid,shmid;
-	struct account *shared;
-	shmid = shmget(SHMKEY, 0, 0);
-	semid = semget(SEMKEY, NUM_SEMS, 0777);
-	shared = (struct account *)shmat(shmid, 0, 0);  
-	int pid=getpid();
-	int amount = amt; 
-   
-	printf("Depositing child process %d is going to add $%d.\n",pid,amount);
-
-	P(semid, mutex);
-	shared->balance = shared->balance + amount;
-	if (shared->waitingCount == 0) {
-		printf("No pending withdrawls, proceed\n");
-		V(semid, mutex);
-	}
-	else if (shared->head->next->data > shared->balance) {
-		printf("Attempted to service first waiting withdrawl of %d, but balance is only %d\n", shared->head->next->data, shared->balance);
-		V(semid, mutex);
-	}
-	else {
-		printf("Signalling waiting withdrawer\n");
-		V(semid, waitingWithdrawers);	
-	}
-	printf("Applied amount of %d by Process %d. Current Balance: %d\n",amount,pid,shared->balance);
-	V(semid, mutex);
-	exit(0);
-}
-
 int main(void)
 {
 	/*LIST INITIALIZATION 
@@ -124,28 +51,36 @@ int main(void)
 	f = 500;
 	sleep(2);
 	g = 200;
+
+	
 	
 	if ((pid1=fork())==0) {
-		depositer(a);	
+		execl("depositer.bin", &a);	
+		exit(EXIT_SUCCESS);
 	}
 	if ((pid2=fork())==0) {
-		depositer(b);
+		execl("depositer.bin", &b);
+		exit(EXIT_SUCCESS);
 	}
-
 	if ((pid3=fork())==0) {
-		withdrawer(c);
+		execl("withdrawer.bin", &c);
+		exit(EXIT_SUCCESS);
 	}
 	if ((pid4=fork())==0) {
-		withdrawer(d);
+		execl("withdrawer.bin", &d);
+		exit(EXIT_SUCCESS);
 	}
 	if ((pid5=fork())==0) {
-		depositer(e);
+		execl("depositer.bin", &e);
+		exit(EXIT_SUCCESS);
 	}
 	if ((pid6=fork())==0) {
-		depositer(f);
+		execl("depositer.bin", &f);
+		exit(EXIT_SUCCESS);
 	}
 	if ((pid7=fork())==0) {
-		withdrawer(g);
+		execl("withdrawer.bin", &g);
+		exit(EXIT_SUCCESS);
 	}
 	/* EXECUTION */
 	printf("Balance is initially: %d\n", shared->balance); 

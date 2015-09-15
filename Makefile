@@ -6,6 +6,12 @@ HEADERS = semex.h list.h
 
 all: $(OUTPUT)
 
+withdrawer.bin: withdrawer.c $(HEADERS)
+	$(CC) $(LIBS) $(CFLAGS) -o $@ $<
+
+depositer.bin: depositer.c $(HEADERS)
+	$(CC) $(LIBS) $(CFLAGS) -o $@ $<
+
 ll.bin: list.c $(HEADERS)
 	$(CC) $(LIBS) $(CFLAGS) -o $@ $<
 
