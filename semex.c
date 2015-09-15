@@ -17,7 +17,6 @@ int main(void)
         temp -> next = NULL;
 
 	/* INITIALIZATIONS */
-	FILE *fp;
 	int shmid,semid,pid1,pid2,pid3,pid4,pid5,pid6,pid7;
 	u_short seminit[NUM_SEMS];
 	key_t key;
@@ -25,8 +24,8 @@ int main(void)
 	struct account *shared;
 	srand(time(NULL));
 	key=ftok(".", SEMKEY);
-	seminit[0]=1; /* mutex */
-	seminit[1]=0; /* waitingWithdrawers */
+	seminit[mutex]=1; /* mutex */
+	seminit[waitingWithdrawers]=0; /* waitingWithdrawers */
 	semctlarg.array=seminit;
 	semctl(SEMKEY,1,SETALL,semctlarg);
 	semid = semget(SEMKEY, NUM_SEMS, 0777 | IPC_CREAT);
@@ -35,51 +34,34 @@ int main(void)
 	shared->balance = 0;
 	shared->head = start;
 
-	/* CUSTOMER CREATION */
-	/* P(semid, mutex); */
-	int a,b,c,d,e,f,g;
-	a = 1000;
-	sleep(2);
-	b = 100;
-	sleep(2);
-	c = 100;
-	sleep(2);
-	d = 200;
-	sleep(2);
-	e = 500;
-	sleep(2);
-	f = 500;
-	sleep(2);
-	g = 200;
-
-	
 	
 	if ((pid1=fork())==0) {
-		execl("depositer.bin", &a);	
+		printf("Created child %d", getpid()); 
+		execl("depositer.bin", "100", (char*)NULL);	
 		exit(EXIT_SUCCESS);
 	}
-	if ((pid2=fork())==0) {
-		execl("depositer.bin", &b);
+	else if ((pid2=fork())==0) {
+		execl("depositer.bin", "200", (char*)NULL);
 		exit(EXIT_SUCCESS);
 	}
-	if ((pid3=fork())==0) {
-		execl("withdrawer.bin", &c);
+	else if ((pid3=fork())==0) {
+		execl("withdrawer.bin", "150", (char*)NULL);
 		exit(EXIT_SUCCESS);
 	}
-	if ((pid4=fork())==0) {
-		execl("withdrawer.bin", &d);
+	else if ((pid4=fork())==0) {
+		execl("withdrawer.bin", "15", (char*)NULL);
 		exit(EXIT_SUCCESS);
 	}
-	if ((pid5=fork())==0) {
-		execl("depositer.bin", &e);
+	else if ((pid5=fork())==0) {
+		execl("depositer.bin", "300", (char*)NULL);
 		exit(EXIT_SUCCESS);
 	}
-	if ((pid6=fork())==0) {
-		execl("depositer.bin", &f);
+	else if ((pid6=fork())==0) {
+		execl("depositer.bin", "400", (char*)NULL);
 		exit(EXIT_SUCCESS);
 	}
-	if ((pid7=fork())==0) {
-		execl("withdrawer.bin", &g);
+	else if ((pid7=fork())==0) {
+		execl("withdrawer.bin", "250", (char*)NULL);
 		exit(EXIT_SUCCESS);
 	}
 	/* EXECUTION */
@@ -91,9 +73,12 @@ int main(void)
 	V(semid, mutex);
 	printf("Parent is now waiting for the children to exit.\n");
 	wait(0);
-
-	printf("First Child has exited. Final balance: $%d. Cleaning up...\n", shared->balance);
-		
+	wait(0);
+	wait(0);
+	wait(0);
+	wait(0);
+	wait(0);
+	wait(0);
 	kill(pid1, SIGKILL);
 	kill(pid2, SIGKILL);
 	kill(pid3, SIGKILL);
@@ -101,14 +86,7 @@ int main(void)
 	kill(pid5, SIGKILL);
 	kill(pid6, SIGKILL);
 	kill(pid7, SIGKILL);
-
-	wait(0);
-	wait(0);
-	wait(0);
-	wait(0);
-	wait(0);
-	wait(0);
-	wait(0);
+	printf("Children have exited. Final balance: $%d. Cleaning up...\n", shared->balance);
 	shmctl(shmid, IPC_RMID, 0);
 	semctl(SEMKEY,1,IPC_RMID,0);
 	printf("Closing...");

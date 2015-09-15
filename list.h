@@ -7,8 +7,9 @@ typedef struct Node
         struct Node *next;
 }node;
 
-void insert(node*, int);
-int find(node*, int);
-void delete(node*, int);
-void print(node*);
+
+void* insert(node*, int);
+int* find(node*, int);
+void* delete(node*, int);
+void* print(node*);
 

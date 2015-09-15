@@ -7,13 +7,13 @@ temp = start;
 temp -> next = NULL;
 */
 
-/*
+
 int main() {
 	node *start,*temp;
         start = (node *)malloc(sizeof(node)); 
         temp = start;
         temp -> next = NULL;
-} */
+} 
 
 void insert(node *pointer, int data)
 {

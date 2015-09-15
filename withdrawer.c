@@ -1,6 +1,6 @@
-#include "main.h"
+#include "semex.h"
 
-void main(int argc, char** argv)
+int main(int argc, char *argv[])
 {
 	int semid,shmid;
 	struct account *shared;
@@ -8,7 +8,8 @@ void main(int argc, char** argv)
 	semid = semget(SEMKEY, NUM_SEMS, 0777);
 	shared = (struct account *)shmat(shmid, 0, 0);  
 	int pid=getpid();
-	int amount = argv[0];
+	int amount = atoi(argv[1]);
+	
    
 	printf("Child process %d is going to withdraw $%d.\n",pid,amount);
 	
@@ -38,4 +39,5 @@ void main(int argc, char** argv)
 	}
 	printf("Critical Section Cleared. Applied amount of %d by Process %d. Current Balance: %d\n",amount,pid,shared->balance);
 	V(semid, mutex);
+	return 0;
 }
