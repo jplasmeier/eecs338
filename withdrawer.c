@@ -92,6 +92,7 @@ int main(int argc, char *argv[])
 		delete(shared->head, amount);	/*remove process from list*/
 		shared->waitingCount = shared->waitingCount - 1;
 		if (shared->waitingCount > 1 && shared->head->next->data < shared->balance) {
+			printf("Signalling next waiting withdrawer.\n");
 			V(semid, waitingWithdrawers);
 		}
 		else {
@@ -99,7 +100,6 @@ int main(int argc, char *argv[])
 			V(semid, mutex); //this signal corresponds to the departing depositer's wait.
 		}
 	}
-	printf("Critical Section Cleared. Applied amount of %d by Process %d. Current Balance: %d\n",amount,pid,shared->balance);
 	V(semid, mutex);
 	return 0;
 }

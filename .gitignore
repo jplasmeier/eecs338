@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+!semex.c
+!withdrawer.c
+!depositer.c
+!Makefile
+!semex.h

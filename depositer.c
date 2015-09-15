@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 		printf("Signalling waiting withdrawer\n");
 		V(semid, waitingWithdrawers);	
 	}
-	printf("Applied amount of %d by Process %d. Current Balance: %d\n",amount,pid,shared->balance);
+	printf("Deposit of %d by Process %d. Current Balance: %d\n",amount,pid,shared->balance);
 	V(semid, mutex);
 	return 0;
 }

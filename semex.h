@@ -31,7 +31,7 @@ struct account {
 void P(int semid, int semaphore)
 {
 	struct sembuf psembuf;
-	printf("Probieren\n");
+	printf("Probieren auf [%d]\n", semaphore);
 	psembuf.sem_op = -1;
 	psembuf.sem_flg = 0;
 	psembuf.sem_num = semaphore;
@@ -42,7 +42,7 @@ void P(int semid, int semaphore)
 void V(int semid, int semaphore)
 {
 	struct sembuf vsembuf;
-	printf("Verhogen\n");
+	printf("Verhogen auf [%d]\n", semaphore);
 	vsembuf.sem_op = 1;
 	vsembuf.sem_flg = 0;
 	vsembuf.sem_num = semaphore;
