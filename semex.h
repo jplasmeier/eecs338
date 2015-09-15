@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/shm.h>
-#include "list.h"
 
 #define SEMKEY 77
 #define SHMKEY 77
@@ -16,12 +15,6 @@
 #define mutex 0
 #define waitingWithdrawers 1
 
-struct account {
-	int balance;
-	int customer_pid;
-	int waitingCount;
-	node* head;
-};
 
 void P(int semid, int semaphore)
 {

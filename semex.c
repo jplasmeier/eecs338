@@ -1,5 +1,13 @@
 #include "semex.h"
 
+
+struct account {
+	int balance;
+	int customer_pid;
+	int waitingCount;
+	node* head;
+};
+
 int main(void)
 {
 	/*LIST INITIALIZATION 
@@ -11,11 +19,6 @@ int main(void)
 
 	printf("Starting now:\n");
 	
-	node *start,*temp;
-        start = (node *)malloc(sizeof(node)); 
-        temp = start;
-        temp -> next = NULL;
-
 	/* INITIALIZATIONS */
 	int shmid,semid,pid1,pid2,pid3,pid4,pid5,pid6,pid7;
 	u_short seminit[NUM_SEMS];
@@ -33,7 +36,11 @@ int main(void)
 	shared=(struct account *)shmat(shmid, 0, 0); 
 	shared->balance = 0;
 	shared->head = start;
-
+//stuff from main
+	node *start,*temp;
+        start = (node *)malloc(sizeof(node)); 
+        temp = start;
+        temp -> next = NULL;
 	
 	if ((pid1=fork())==0) {
 		printf("Created child %d", getpid()); 
